@@ -1999,18 +1999,11 @@ function renderMobileAuth() {
 let trackPrefill = "";
 let trackBusy = false;
 
-const ORDER_FLOW = ["Pending", "Processing", "Shipped", "Out for Delivery", "Delivered"];
+const ORDER_FLOW = ["pending", "processing", "shipped", "out for delivery", "delivered"];
 
 function orderStepHTML(o) {
- const st = ({
-  pending: "Pending",
-  processing: "Processing",
-  shipped: "Shipped",
-  "out for delivery": "Out for Delivery",
-  delivered: "Delivered",
-  cancelled: "Cancelled"
-}[(o.status || "Pending").trim().toLowerCase()] || "Pending");
-  if (st === "Cancelled") {
+ const st = (o.orderStatus || o.status || "Pending").trim().toLowerCase() || "pending";
+  if (st === "cancelled") {
     return `<div class="tl-cancelled"><span>✕</span><div><b>Cancelled</b><br>This order was cancelled.</div></div>`;
   }
   const idx = ORDER_FLOW.indexOf(st);
