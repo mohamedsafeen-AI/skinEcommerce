@@ -1797,7 +1797,7 @@ async function placeOrder(e) {
           toast("Online payments aren't ready yet. Please use Cash on Delivery.", "error");
           selectPay("cod");
         } else {
-          toast((res && res.message) || "Unable to start the payment. Please try again.", "error");
+          toast((res && (res.detail || res.message)) || "Unable to start the payment. Please try again.", "error");
         }
       }
     } else {
