@@ -2002,7 +2002,11 @@ let trackBusy = false;
 const ORDER_FLOW = ["pending", "processing", "shipped", "out for delivery", "delivered"];
 
 function orderStepHTML(o) {
- const st = (o.orderStatus || o.status || "Pending").trim().toLowerCase() || "pending";
+ const rawStatus = String(o.orderStatus || o.status || "Pending").trim().toLowerCase();
+
+const st = ORDER_FLOW.find(function(status) {
+  return status.toLowerCase() === rawStatus;
+}) || "pending";
   if (st === "cancelled") {
     return `<div class="tl-cancelled"><span>✕</span><div><b>Cancelled</b><br>This order was cancelled.</div></div>`;
   }
