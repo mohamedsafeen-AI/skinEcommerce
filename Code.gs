@@ -730,7 +730,45 @@ function doUpdateOrderStatus_(e, method) {
 
   return jsonResponse_({ success: false, message: "Order not found" });
 }
+function setOrderStatus_(orderId, newStatus) {
+  var ordersSheet = ensureSheet_("Orders", ORDERS_HEADERS);
+  var width = Math.max(ordersSheet.getLastColumn(), 1);
+  var headers = ordersSheet.getRange(1, 1, 1, width).getValues()[0];
 
+  var idCol = -1;
+  var statusCol = -1;
+  var luCol = -1;
+
+  for (var h = 0; h < headers.length; h++) {
+    var header = String(headers[h]).trim();
+
+    if (header === "Order ID") idCol = h;
+    else if (header === "Order Status" || header === "Status") statusCol = h;
+    else if (header === "Last Updated") luCol = h;
+  }
+
+  if (idCol === -1 || statusCol === -1) return false;
+
+  var lastRow = ordersSheet.getLastRow();
+  if (lastRow <= 1) return false;
+
+  var rows = ordersSheet.getRange(2, 1, lastRow - 1, width).getValues();
+  var targetId = normalizeOrderId_(orderId);
+
+  for (var i = 0; i < rows.length; i++) {
+    if (String(rows[i][idCol]).trim().toUpperCase() === targetId) {
+      ordersSheet.getRange(i + 2, statusCol + 1).setValue(newStatus);
+
+      if (luCol !== -1) {
+        ordersSheet.getRange(i + 2, luCol + 1).setValue(formatTimestamp_(new Date()));
+      }
+
+      return true;
+    }
+  }
+
+  return false;
+}
 // ------------------------------------------------------------
 // ADMIN — UPDATE SHIPPING (AWB + Courier)  (persists to Google Sheets)
 // ------------------------------------------------------------
